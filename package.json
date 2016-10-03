@@ -1,0 +1,26 @@
+{
+  "name": "fpl-crawler",
+  "version": "1.0.0",
+  "description": "Crawls FPL data and updates datastore for the FPL app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/etakgoz/fpl-crawler"
+  },
+  "author": "Tolga Akgöz",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/etakgoz/fpl-crawler/issues"
+  },
+  "homepage": "https://github.com/etakgoz/fpl-crawler",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "cheerio": "^0.22.0",
+    "compression": "^1.6.2",
+    "express": "^4.14.0",
+    "request": "^2.75.0"
+  }
+}
