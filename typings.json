@@ -1,0 +1,13 @@
+{
+    "name": "fpl-crawler",
+    "version": false,
+    "globalDependencies": {
+        "body-parser": "github:DefinitelyTyped/DefinitelyTyped/body-parser/body-parser.d.ts#32f0a90dab26f70b206407ac24d4d622d0f0f408",
+        "express": "github:DefinitelyTyped/DefinitelyTyped/express/express.d.ts#32f0a90dab26f70b206407ac24d4d622d0f0f408",
+        "node": "github:DefinitelyTyped/DefinitelyTyped/node/node.d.ts#af76bf46025371c760d8fe8c03cf874428da6124",
+        "cheerio":"github:DefinitelyTyped/DefinitelyTyped/cheerio/cheerio.d.ts",
+        "compression": "github:DefinitelyTyped/DefinitelyTyped/compression/compression.d.ts",
+        "morgan": "github:DefinitelyTyped/DefinitelyTyped/morgan/morgan.d.ts#32f0a90dab26f70b206407ac24d4d622d0f0f408"
+    }
+}
+

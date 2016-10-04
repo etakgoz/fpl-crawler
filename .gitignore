@@ -1,5 +1,12 @@
 # Exclude OS X folder attributes
 .DS_Store
 
-node_modules
+node_modules/*
 npm-debug.log
+.tscache
+.sublime-grunt-cache
+*.tmp.txt
+*.cache
+typings
+bin
+todo.md
