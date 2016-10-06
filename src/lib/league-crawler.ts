@@ -14,15 +14,17 @@ export default class LeagueCrawler {
     }
 
     getTeams() {
-        // Try to access the firebase first, otherwise first run crawl
+        if(!this.isTeamsCrawledBefore()) {
+            // this.crawlTeams()
+            // return teams...
+        }
+
+        // return teams..
     }
 
     isTeamsCrawledBefore() : boolean {
+        // TODO: check teams
         return false;
-    }
-
-    getGameweekStatus() {
-
     }
 
     private getLeagueDataUrl(): string {
