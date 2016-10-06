@@ -11,7 +11,7 @@ export default class LeagueRoute {
         app.route("/league/crawl")
             .get((req: express.Request, res: express.Response, next: Function): void => {
                 let leagueCrawler = new LeagueCrawler(config.leagueId);
-                console.log(leagueCrawler.getLeagueDataUrl());
+                // console.log(leagueCrawler.getLeagueDataUrl());
 
 
                 res.status(200).send({

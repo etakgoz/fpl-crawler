@@ -4,7 +4,7 @@ import * as express from "express";
 import * as logger from "morgan";
 import * as path from "path";
 
-export default function(db) {
+export default function() {
     var app: express.Express = express();
 
     app.use(logger("dev"));
@@ -22,6 +22,10 @@ export default function(db) {
     };
 
     app.use(allowCrossDomain);
+
+    // Favicon
+    const favicon = require('serve-favicon');
+    app.use(favicon('public/favicon.ico'));
 
     // Routes
     require("../routes/index").default(app);

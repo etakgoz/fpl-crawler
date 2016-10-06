@@ -32,6 +32,7 @@
     "load-grunt-tasks": "^3.2.0",
     "morgan": "^1.7.0",
     "request": "^2.75.0",
+    "serve-favicon": "^2.3.0",
     "ts-node": "^0.7.1",
     "typescript": "^1.8.9",
     "typings": "^1.0.5"
