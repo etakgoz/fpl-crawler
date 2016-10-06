@@ -7,16 +7,25 @@ import * as path from "path";
 export default function(db) {
     var app: express.Express = express();
 
-
     app.use(logger("dev"));
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: false }));
 
 
-    // CORS Middlewater
+    // CORS Middleware
+    var allowCrossDomain = (req, res, next) => {
+        res.header('Access-Control-Allow-Origin', '*');
+        res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE, OPTIONS');
+        res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
+
+        next();
+    };
+
+    app.use(allowCrossDomain);
 
     // Routes
     require("../routes/index").default(app);
+    require("../routes/league").default(app);
 
     // catch 404 and forward to error handler
     app.use((req: express.Request, res: express.Response, next: Function): void => {

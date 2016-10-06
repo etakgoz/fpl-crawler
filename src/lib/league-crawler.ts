@@ -1,19 +1,31 @@
-interface League {
-    id: string;
+export default class LeagueCrawler {
+    constructor (private leagueId: number) {}
+
+    getId() {
+        return this.leagueId;
+    }
+
+    crawlTeams() {
+
+    }
+
+    saveTeams() {
+
+    }
+
+    getTeams() {
+        // Try to access the firebase first, otherwise first run crawl
+    }
+
+    isTeamsCrawledBefore() : boolean {
+        return false;
+    }
+
+    getGameweekStatus() {
+
+    }
+
+    private getLeagueDataUrl(): string {
+        return `https://fantasy.premierleague.com/drf/leagues-classic-standings/${this.leagueId}?phase=1&le-page=1&ls-page=1`;
+    }
 }
-
-
-/*
-class LeagueCrawler {
-    constructor(leagueId) {
-        this.leadueId = leagueId;
-        this.leagueUrl = `https://fantasy.premierleague.com/drf/leagues-classic-standings/${leagueId}?phase=1&le-page=1&ls-page=1`;
-    }
-
-    crawl() {
-        return new League(this.leagueId);
-    }
-};*/
-
-
-// module.exports = League
