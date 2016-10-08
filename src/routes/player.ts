@@ -30,6 +30,44 @@ export default class PlayerRoute {
                 });
             });
 
+        app.route("/player/:id")
+            .get((req: express.Request, res: express.Response, next: Function): void => {
+                const playerId = req.params.id;
+                playerCrawler
+                    .getPlayers()
+                    .then((players) => {
+                        let filteredPlayers = players.filter(player => {
+                            return player.id === playerId
+                        });
+
+                        if (filteredPlayers.length > 0) {
+                            res.status(200).json({
+                                "Success": true,
+                                "Data": {
+                                    "Player": filteredPlayers[0]
+                                }
+                            });
+                        } else {
+                            res.status(404).json({
+                                "Success": false,
+                                "Data": {
+                                    "Message": `The player with the id: ${playerId} does not exist.`
+                                }
+                            });
+                        }
+
+                    })
+                    .catch(error => {
+                        res.status(500).json({
+                            "Success": false,
+                            "Data": {
+                                "Message": error
+                            }
+                        });
+                    });
+            });
+
+
         app.route("/player")
             .get((req: express.Request, res: express.Response, next: Function): void => {
 
@@ -53,5 +91,7 @@ export default class PlayerRoute {
                         });
                     });
             });
+
+
     }
 }
