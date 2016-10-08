@@ -4,11 +4,16 @@
     "globalDependencies": {
         "body-parser": "github:DefinitelyTyped/DefinitelyTyped/body-parser/body-parser.d.ts#32f0a90dab26f70b206407ac24d4d622d0f0f408",
         "express": "github:DefinitelyTyped/DefinitelyTyped/express/express.d.ts#32f0a90dab26f70b206407ac24d4d622d0f0f408",
-        "node": "github:DefinitelyTyped/DefinitelyTyped/node/node.d.ts#af76bf46025371c760d8fe8c03cf874428da6124",
+        "node": "github:DefinitelyTyped/DefinitelyTyped/node/node.d.ts",
         "cheerio":"github:DefinitelyTyped/DefinitelyTyped/cheerio/cheerio.d.ts",
         "compression": "github:DefinitelyTyped/DefinitelyTyped/compression/compression.d.ts",
-        "morgan": "github:DefinitelyTyped/DefinitelyTyped/morgan/morgan.d.ts#32f0a90dab26f70b206407ac24d4d622d0f0f408",
-        "serve-favicon": "github:DefinitelyTyped/DefinitelyTyped/serve-favicon/serve-favicon.d.ts#32f0a90dab26f70b206407ac24d4d622d0f0f408"
+        "serve-favicon": "github:DefinitelyTyped/DefinitelyTyped/serve-favicon/serve-favicon.d.ts#32f0a90dab26f70b206407ac24d4d622d0f0f408",
+        "request": "github:DefinitelyTyped/DefinitelyTyped/request/request.d.ts",
+        "form-data": "github:DefinitelyTyped/DefinitelyTyped/form-data/form-data.d.ts",
+        "winston": "github:DefinitelyTyped/DefinitelyTyped/winston/winston.d.ts",
+        "es6-promise": "github:DefinitelyTyped/DefinitelyTyped/es6-promise/es6-promise.d.ts",
+        "firebase": "github:DefinitelyTyped/DefinitelyTyped/firebase/firebase.d.ts",
+        "morgan": "github:DefinitelyTyped/DefinitelyTyped/morgan/morgan.d.ts#32f0a90dab26f70b206407ac24d4d622d0f0f408"
     }
 }
 

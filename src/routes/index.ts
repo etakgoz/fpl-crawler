@@ -1,5 +1,6 @@
 import * as express from "express";
-import config from "../configs/config";
+import Config from "../configs/config";
+
 
 export default class IndexRoute {
     constructor(app : express.Express) {
@@ -12,7 +13,7 @@ export default class IndexRoute {
                 res.status(200).send({
                     "Success": true,
                     "Data": {
-                        "Message": "FPL Crawler is working. Version: " + config.version
+                        "Message": "FPL Crawler is working. Version: " + Config.version
                     }
                 });
             });

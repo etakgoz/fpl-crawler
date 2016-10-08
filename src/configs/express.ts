@@ -1,5 +1,5 @@
 import * as bodyParser from "body-parser";
-import config from "./config";
+import Config from "./config";
 import * as express from "express";
 import * as logger from "morgan";
 import * as path from "path";

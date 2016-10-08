@@ -21,7 +21,10 @@
     "body-parser": "^1.15.2",
     "cheerio": "^0.22.0",
     "compression": "^1.6.2",
+    "es6-promise": "^4.0.5",
     "express": "^4.14.0",
+    "firebase": "^3.4.1",
+    "form-data": "^2.1.1",
     "grunt": "^0.4.5",
     "grunt-concurrent": "^2.0.3",
     "grunt-contrib-jshint": "^0.11.2",
@@ -35,6 +38,7 @@
     "serve-favicon": "^2.3.0",
     "ts-node": "^0.7.1",
     "typescript": "^1.8.9",
-    "typings": "^1.0.5"
+    "typings": "^1.0.5",
+    "winston": "^2.2.0"
   }
 }

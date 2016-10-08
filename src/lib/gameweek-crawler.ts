@@ -13,7 +13,8 @@ export default class GameweekCrawler {
     }
 
     public static getGameweeks(): number[] {
-
+        let gameweeks = [1, 2, 3, 4, 5];
+        return gameweeks;
     }
 
     public static getCurrentGameweek(): number {
