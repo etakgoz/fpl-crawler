@@ -10,7 +10,7 @@ export default class IndexRoute {
     public static activate (app : express.Express) : void {
         app.route("/")
             .get((req: express.Request, res: express.Response, next: Function): void => {
-                res.status(200).send({
+                res.status(200).json({
                     "Success": true,
                     "Data": {
                         "Message": "FPL Crawler is working. Version: " + Config.version

@@ -3,14 +3,14 @@ import Player from "./player";
 import Config from "../configs/config";
 import Util from "./util";
 
-export default class LeagueCrawler {
-    constructor (private leagueId: number) {}
+export default class PlayerCrawler {
+    constructor (private leagueId: number, private firebaseDb: any) {}
 
     getId() {
         return this.leagueId;
     }
 
-    crawlPlayers() : Promise <Player[]> {
+    crawl() : Promise <Player[]> {
         Config.logger.log('info', `Started crawling league: ${this.leagueId}`);
 
         return new Promise ((resolve, reject) => {
@@ -39,34 +39,17 @@ export default class LeagueCrawler {
     }
 
     savePlayers(players: Player[]) {
-        const firebase = require('firebase');
-        firebase.initializeApp(Config.firebaseConfig);
-        const firePlayers = firebase.database().ref('/programmers');
+        this.firebaseDb.ref('/players').set(players);
+    }
 
-        firePlayers.set({
-          alanisawesome: {
-            date_of_birth: "June 23, 1912",
-            full_name: "Alan Turing"
-          },
-          gracehop: {
-            date_of_birth: "December 9, 1906",
-            full_name: "Grace Hopper"
-          }
+    getPlayers(): Promise<Player[]> {
+        return new Promise((resolve, reject) => {
+            this.firebaseDb.ref('/players').once('value', snapshot => {
+                resolve(snapshot.val());
+            }, error => {
+                reject(error);
+            });
         });
-    }
-
-    getPlayers() {
-        if(!this.isTeamsCrawledBefore()) {
-            // this.crawlTeams()
-            // return teams...
-        }
-
-        // return teams..
-    }
-
-    isTeamsCrawledBefore() : boolean {
-        // TODO: check teams
-        return false;
     }
 
     private getLeagueDataUrl(): string {
