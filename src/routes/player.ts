@@ -16,7 +16,7 @@ export default class PlayerRoute {
 
                 playerCrawler
                     .crawl()
-                    .then((players) => playerCrawler.savePlayers(players));
+                    .then(players => playerCrawler.savePlayers(players));
 
                 // TODO: Catch errors and log them
 

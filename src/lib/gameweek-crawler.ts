@@ -1,17 +1,37 @@
+import * as request from "request";
+import Gameweek from "./gameweek";
+import Config from "../configs/config";
+import Util from "./util";
+
 export default class GameweekCrawler {
     private nGameWeeks = 38;
 
     constructor (private firebaseDb: any) {}
 
-    public crawlGameweekData(teamId:number, gameweek: number) {
-        // will crawl team data
+    public saveGameweek(gameweek): Promise<boolean> {
+        return new Promise((resolve, reject) => {
+            resolve(true);
+            // TODO: will save gameweek data to firebase
+        });
     }
 
-    public saveGameweekData(teamId:number, gameweekData) {
-        // will save team data to firebase
+    public crawlGameweek(gameweekId: number): Promise<Gameweek> {
+        return new Promise((resolve, reject) => {
+            // TODO: will crawl gameweek data for a specific gameweek (will be used for the latest)
+        });
+
+    }
+    public saveGameweeks(gameweeks: Gameweek[]): Promise<boolean> {
+        return new Promise((resolve, reject) => {
+            resolve(true);
+            // TODO: will save gameweeks data to firebase
+        });
     }
 
-    public crawlGameweekStatus() {
+    public crawlGameweeks(): Promise<Gameweek[]> {
+        return new Promise((resolve, reject) => {
+            // TODO: will crawl gameweek data for specific gameweek
+        });
     }
 
     public getCurrentGameweek(): Promise<number> {
