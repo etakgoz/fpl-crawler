@@ -11,7 +11,7 @@ export default class Config {
         ]
     });
 
-    public static firebaseConfig = {
+    private static firebaseConfig = {
       serviceAccount: {
           projectId: "fpl-test",
           client_email: "admin-468@fpl-test.iam.gserviceaccount.com",
@@ -20,4 +20,18 @@ export default class Config {
       databaseURL: "https://fpl-test.firebaseio.com"
     };
 
+    private static firebaseDb = null;
+
+    public static getFirebaseDb() {
+
+        if (this.firebaseDb !== null) {
+            return this.firebaseDb;
+        } else {
+            const firebase = require('firebase');
+            firebase.initializeApp(this.firebaseConfig);
+            this.firebaseDb = firebase.database();
+            return this.firebaseDb;
+        }
+
+    }
 }

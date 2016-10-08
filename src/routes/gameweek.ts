@@ -1,16 +1,43 @@
 import * as express from "express";
 import Config from "../configs/config";
-import PlayerCrawler from "../lib/player-crawler";
+import GameweekCrawler from "../lib/gameweek-crawler";
 import Util from "../lib/util";
 
-const playerCrawler = new PlayerCrawler(Config.leagueId, Config.getFirebaseDb());
+const gameweekCrawler = new GameweekCrawler(Config.getFirebaseDb());
 
-export default class PlayerRoute {
+export default class GameweekRoute {
     constructor(app : express.Express) {
-        PlayerRoute.activate(app);
+        GameweekRoute.activate(app);
     }
 
     public static activate (app : express.Express) : void {
+
+        app.route("/gameweek/current")
+            .get((req: express.Request, res: express.Response, next: Function): void => {
+
+                gameweekCrawler
+                    .getCurrentGameweek()
+                    .then(gameweekId => {
+                        Util.respondSuccess(res, {
+                            "GameweekId": gameweekId
+                        });
+                    })
+                    .catch(error => Util.respondError(res, 500, error));
+            })
+            .post((req: express.Request, res: express.Response, next: Function): void => {
+                const newCurrentGameweekId = req.body.gameweekId;
+
+                gameweekCrawler
+                    .setCurrentGameweek(newCurrentGameweekId)
+                    .then(success => {
+                        Util.respondSuccess(res, {
+                            "Message": `Current gameweek id updated to the ${newCurrentGameweekId}`
+                        });
+                    })
+                    .catch(error => Util.respondError(res, 500, error));
+            });
+
+        /*
         app.route("/player/crawl")
             .get((req: express.Request, res: express.Response, next: Function): void => {
 
@@ -61,6 +88,7 @@ export default class PlayerRoute {
                     })
                     .catch(error => Util.respondError(res, 500, error));
             });
+        */
 
 
     }

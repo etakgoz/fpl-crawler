@@ -30,6 +30,7 @@ export default function() {
     // Routes
     require("../routes/index").default(app);
     require("../routes/player").default(app);
+    require("../routes/gameweek").default(app);
 
     // catch 404 and forward to error handler
     app.use((req: express.Request, res: express.Response, next: Function): void => {
