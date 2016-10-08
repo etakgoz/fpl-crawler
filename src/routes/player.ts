@@ -3,14 +3,15 @@ import Config from "../configs/config";
 import PlayerCrawler from "../lib/player-crawler";
 import Util from "../lib/util";
 
-const playerCrawler = new PlayerCrawler(Config.leagueId, Config.getFirebaseDb());
-
 export default class PlayerRoute {
     constructor(app : express.Express) {
         PlayerRoute.activate(app);
     }
 
     public static activate (app : express.Express) : void {
+
+        const playerCrawler = new PlayerCrawler(Config.leagueId, Config.getFirebaseDb());
+
         app.route("/player/crawl")
             .get((req: express.Request, res: express.Response, next: Function): void => {
 
@@ -21,7 +22,7 @@ export default class PlayerRoute {
                 // TODO: Catch errors and log them
 
                 Util.respondSuccess(res, {
-                    "Message": `Crawling of the league with the id: ${Config.leagueId} started.`
+                    "Message": `Crawling of the league with the id: ${Config.leagueId} has started.`
                 });
             });
 
