@@ -63,14 +63,6 @@ export default class GameweekCrawler {
         return this.players.map(player => this.crawlGameweekResultForPlayer(player.id, gameweekId));
     }
 
-    public saveAllGameweekResults(results: GameweekResult[]): Promise<boolean> {
-        return new Promise((resolve, reject) => {
-            resolve(true);
-            // TODO: will save gameweeks data to firebase
-        });
-    }
-
-
     public crawlAllGameweekResults(currentGameweekId:number): Promise<GameweekResult>[][] {
         let gameweekCrawls = [];
         for (let i = 1; i < currentGameweekId + 1; i++ ) {
