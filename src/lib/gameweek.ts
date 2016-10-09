@@ -1,5 +1,8 @@
+import GameweekResult from "./gameweek-result"
+
 interface Gameweek {
-    id: string
+    id: string,
+    results: GameweekResult []
 }
 
 export default Gameweek;

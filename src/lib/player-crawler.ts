@@ -23,7 +23,7 @@ export default class PlayerCrawler {
                             return {
                                 name: Util.titleCase(result["player_name"]),
                                 team: Util.titleCase(result["entry_name"]),
-                                id: String(result["id"])
+                                id: String(result["entry"])
                             }
                         });
 

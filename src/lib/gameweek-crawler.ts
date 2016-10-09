@@ -1,5 +1,5 @@
 import * as request from "request";
-import Gameweek from "./gameweek";
+import GameweekResult from "./gameweek-result";
 import Player from "./player";
 import Config from "../configs/config";
 import Util from "./util";
@@ -9,35 +9,79 @@ export default class GameweekCrawler {
 
     constructor (private players: Player[], private firebaseDb: any) {}
 
-    public saveGameweek(gameweek): Promise<boolean> {
+    private isValidGameweekId(gameweekId: number): boolean {
+        // Gameweek Id must be integer bigger than 0 and smaller than nGameWeeks + 1
+        return ((gameweekId > 0 && gameweekId < (this.nGameWeeks + 1)) && gameweekId === Math.floor(gameweekId));
+    }
+
+    private getUrl(playerId: string, module: string, gameweekId?:number): string {
+        if (module === "result") {
+            return `https://fantasy.premierleague.com/drf/entry/${playerId}/event/${gameweekId}/picks`;
+        }
+    }
+
+    public saveGameweekResults(gameweekId: number, results: GameweekResult[]): Promise<boolean> {
         return new Promise((resolve, reject) => {
-            resolve(true);
-            // TODO: will save gameweek data to firebase
+            if (this.isValidGameweekId(gameweekId)) {
+                this.firebaseDb.ref('/gameweeks/results/' + gameweekId).set(results, error => {
+                    if (error) {
+                        reject(error);
+                    } else {
+                        resolve(true);
+                    }
+                });
+            } else {
+                reject(new Error("In saveGameweekResults: Gameweek id must be an integer between 1 and 38! It is: " + gameweekId));
+            }
         });
     }
 
-    public crawlGameweek(gameweekId: number): Promise<Gameweek> {
+    private crawlGameweekResultForPlayer(playerId: string, gameweekId: number): Promise<GameweekResult> {
         return new Promise((resolve, reject) => {
-            // TODO: will crawl gameweek data for a specific gameweek (will be used for the latest)
-        });
+            const gameweekResultUrl = this.getUrl(playerId, "result", gameweekId);
 
+            request(gameweekResultUrl, (error, response, jsonString) => {
+                if (!error && response.statusCode == 200) {
+                    let picksData = JSON.parse(jsonString),
+                        result = picksData["entry_history"];
+
+                    resolve({
+                        playerId: playerId,
+                        gameweekId: gameweekId,
+                        points: result["points"],
+                        totalPoints: result["total_points"]
+                    });
+
+                } else {
+                    reject(new Error(`An error occurred while crawling gameweek data for player(${playerId}) and gameweek(${gameweekId})`));
+                }
+            });
+        });
     }
-    public saveGameweeks(gameweeks: Gameweek[]): Promise<boolean> {
+
+    public crawlGameweekResults(gameweekId: number): Promise<GameweekResult> [] {
+        return this.players.map(player => this.crawlGameweekResultForPlayer(player.id, gameweekId));
+    }
+
+    public saveAllGameweekResults(results: GameweekResult[]): Promise<boolean> {
         return new Promise((resolve, reject) => {
             resolve(true);
             // TODO: will save gameweeks data to firebase
         });
     }
 
-    public crawlGameweeks(): Promise<Gameweek[]> {
-        return new Promise((resolve, reject) => {
-            // TODO: will crawl gameweek data for specific gameweek
-        });
+
+    public crawlAllGameweekResults(currentGameweekId:number): Promise<GameweekResult>[][] {
+        let gameweekCrawls = [];
+        for (let i = 1; i < currentGameweekId + 1; i++ ) {
+            gameweekCrawls.push(this.crawlGameweekResults(i));
+        }
+        return gameweekCrawls;
     }
 
     public getCurrentGameweek(): Promise<number> {
         return new Promise((resolve, reject) => {
-            this.firebaseDb.ref('/currentGameweek').once('value', snapshot => {
+            this.firebaseDb.ref('/gameweeks/current').once('value', snapshot => {
                 resolve(snapshot.val());
             }, error => {
                 reject(error);
@@ -48,10 +92,8 @@ export default class GameweekCrawler {
     public setCurrentGameweek(gameweekId: number): Promise<boolean> {
 
         return new Promise((resolve, reject) => {
-            if (gameweekId > 0 || gameweekId < (this.nGameWeeks + 1)) {
-                gameweekId = Math.floor(gameweekId);
-
-                this.firebaseDb.ref('/currentGameweek').set(gameweekId, error => {
+            if (this.isValidGameweekId(gameweekId)) {
+                this.firebaseDb.ref('/gameweeks/current').set(gameweekId, error => {
                     if (error) {
                         reject(error);
                     } else {

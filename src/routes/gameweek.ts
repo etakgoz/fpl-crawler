@@ -48,15 +48,36 @@ export default class GameweekRoute {
             });
 
 
-        app.route("/gameweek/crawl")
+        app.route("/gameweek/result/crawl")
             .get((req: express.Request, res: express.Response, next: Function): void => {
+
                 playerCrawler.getPlayers().then(players => {
                     return new GameweekCrawler(players, Config.getFirebaseDb());
                 })
                 .then(gameweekCrawler => {
                     gameweekCrawler
-                        .crawlGameweeks()
-                        .then(gameweeks => gameweekCrawler.saveGameweeks(gameweeks));
+                        .getCurrentGameweek()
+                        .then(currentGameweek => {
+                            let gameweekCrawls = gameweekCrawler.crawlAllGameweekResults(currentGameweek);
+
+                            gameweekCrawls.forEach(playerCrawls => {
+
+                                Promise.all(playerCrawls)
+                                    .then(results => {
+                                        // console.log(results);
+                                        gameweekCrawler.saveGameweekResults(results[0].gameweekId, results);
+                                    })
+                                    .then(success => {
+                                        // TODO: log success....
+                                        console.log("results saved for gameweek...");
+                                    })
+                                    .catch(error => {
+                                        // TODO: log error...
+                                        console.log(error);
+                                    });
+                            });
+
+                        })
                 })
                 .catch(error => {
                     // TODO: log error...
@@ -69,24 +90,30 @@ export default class GameweekRoute {
             });
 
 
-        app.route("/gameweek/crawl/:id")
+        app.route("/gameweek/result/crawl/:id")
             .get((req: express.Request, res: express.Response, next: Function): void => {
-                const gameweekId = req.params.id;
+                const gameweekId: number = parseInt(req.params.id, 10);
 
                 playerCrawler.getPlayers().then(players => {
                     return new GameweekCrawler(players, Config.getFirebaseDb());
                 })
                 .then(gameweekCrawler => {
-                    gameweekCrawler
-                        .crawlGameweeks()
-                        .then(gameweek => gameweekCrawler.saveGameweek(gameweek));
+                    Promise.all(gameweekCrawler.crawlGameweekResults(gameweekId))
+                        .then(results => gameweekCrawler.saveGameweekResults(gameweekId, results))
+                        .then(success => {
+                            // TODO: log success
+                            console.log("resuls saved...");
+                        })
+                        .catch(error => {
+                            // TODO: log error...
+                            console.log(error);
+                        });
                 })
                 .catch(error => {
                     // TODO: log error...
                     console.log(error);
                 });
 
-                // TODO: Catch errors and log them
                 Util.respondSuccess(res, {
                     "Message": `Crawling of the gameweek(${gameweekId}) for the league with id: ${Config.leagueId} has started.`
                 });
