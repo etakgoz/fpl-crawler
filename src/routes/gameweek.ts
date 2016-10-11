@@ -63,10 +63,7 @@ export default class GameweekRoute {
                             gameweekCrawls.forEach(playerCrawls => {
 
                                 Promise.all(playerCrawls)
-                                    .then(results => {
-                                        // console.log(results);
-                                        gameweekCrawler.saveGameweekResults(results[0].gameweekId, results);
-                                    })
+                                    .then(results => gameweekCrawler.saveGameweekResults(results[0].gameweekId, results))
                                     .then(success => {
                                         // TODO: log success....
                                         console.log("results saved for gameweek...");

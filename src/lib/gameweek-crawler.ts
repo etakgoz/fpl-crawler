@@ -4,6 +4,7 @@ import Player from "./player";
 import Config from "../configs/config";
 import Util from "./util";
 
+
 export default class GameweekCrawler {
     private nGameWeeks = 38;
 
@@ -19,6 +20,7 @@ export default class GameweekCrawler {
             return `https://fantasy.premierleague.com/drf/entry/${playerId}/event/${gameweekId}/picks`;
         }
     }
+
 
     public saveGameweekResults(gameweekId: number, results: GameweekResult[]): Promise<boolean> {
         return new Promise((resolve, reject) => {
@@ -49,7 +51,9 @@ export default class GameweekCrawler {
                         playerId: playerId,
                         gameweekId: gameweekId,
                         points: result["points"],
-                        totalPoints: result["total_points"]
+                        nTransfers: result["event_transfers"],
+                        transferCost: result["event_transfers_cost"],
+                        activeChip: picksData["active_chip"]
                     });
 
                 } else {
