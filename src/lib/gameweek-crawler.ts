@@ -22,14 +22,14 @@ export default class GameweekCrawler {
     }
 
 
-    public saveGameweekResults(gameweekId: number, results: GameweekResult[]): Promise<boolean> {
+    public saveGameweekResults(gameweekId: number, results: GameweekResult[]): Promise<number> {
         return new Promise((resolve, reject) => {
             if (this.isValidGameweekId(gameweekId)) {
                 this.firebaseDb.ref('/gameweeks/results/' + gameweekId).set(results, error => {
                     if (error) {
                         reject(error);
                     } else {
-                        resolve(true);
+                        resolve(gameweekId);
                     }
                 });
             } else {

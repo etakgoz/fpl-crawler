@@ -1,15 +1,7 @@
-import * as winston from "winston";
-
 export default class Config {
     public static port : number = 4000;
     public static leagueId: number = 110296;
     public static version: string = "0.1";
-
-    public static logger = new (winston.Logger)({
-        transports: [
-          new (winston.transports.File)({ filename: 'logs/fpl-crawler.log' })
-        ]
-    });
 
     private static firebaseConfig = {
       serviceAccount: {
@@ -32,6 +24,5 @@ export default class Config {
             this.firebaseDb = firebase.database();
             return this.firebaseDb;
         }
-
     }
 }

@@ -17,9 +17,15 @@ export default class PlayerRoute {
 
                 playerCrawler
                     .crawl()
-                    .then(players => playerCrawler.savePlayers(players));
-
-                // TODO: Catch errors and log them
+                    .then(players => playerCrawler.savePlayers(players))
+                    .then(savedPlayers => {
+                        Util.logInfo('GET /player/crawl',
+                                     'Crawled and saved players: ' + savedPlayers.map(player => player.name).join(','));
+                    })
+                    .catch(error => {
+                        Util.logError('GET /player/crawl',
+                                      `Error while crawling players - Message: ${error.message}`);
+                    });
 
                 Util.respondSuccess(res, {
                     "Message": `Crawling of the league with the id: ${Config.leagueId} has started.`
@@ -41,11 +47,21 @@ export default class PlayerRoute {
                                 "Player": filteredPlayers[0]
                             });
                         } else {
-                            Util.respondError(res, 404, `The player with the id: ${playerId} does not exist.`);
+                            let error = new Error(`The player with the id: ${playerId} does not exist.`);
+
+                            Util.logError(`GET /player/${playerId}`,
+                                          `Error while searching for the player - Message: ${error.message}`);
+
+                            Util.respondError(res, 404, error);
                         }
 
                     })
-                    .catch(error => Util.respondError(res, 500, error));
+                    .catch(error => {
+                        Util.logError(`GET /player/${playerId}`,
+                                      `Error while getting players - Message: ${error.message}`);
+
+                        Util.respondError(res, 500, error);
+                    });
             });
 
 
@@ -60,7 +76,11 @@ export default class PlayerRoute {
                             "Players": players
                         });
                     })
-                    .catch(error => Util.respondError(res, 500, error));
+                    .catch(error => {
+                        Util.logError(`GET /player/`,
+                                      `Error while getting players - Message: ${error.message}`);
+                        Util.respondError(res, 500, error);
+                    });
             });
 
 

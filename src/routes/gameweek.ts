@@ -25,9 +25,18 @@ export default class GameweekRoute {
                             Util.respondSuccess(res, {
                                 "GameweekId": gameweekId
                             });
+                        })
+                        .catch(error => {
+                            Util.respondError(res, 500, error);
+                            Util.logError('GET /gameweek/current',
+                                          `Error while getting current gameweek - Message: ${error.message}`);
                         });
                 })
-                .catch(error => Util.respondError(res, 500, error));
+                .catch(error => {
+                    Util.respondError(res, 500, error);
+                    Util.logError('GET /gameweek/current',
+                                  `Error while creating GameweekCrawler - Message: ${error.message}`);
+                });
             })
             .post((req: express.Request, res: express.Response, next: Function): void => {
                 const newCurrentGameweekId = req.body.gameweekId;
@@ -42,9 +51,18 @@ export default class GameweekRoute {
                             Util.respondSuccess(res, {
                                 "Message": `Current gameweek id is updated to the ${newCurrentGameweekId}`
                             });
+                        })
+                        .catch(error => {
+                            Util.respondError(res, 500, error);
+                            Util.logError('POST /gameweek/current',
+                                          `Error while setting current gameweek - Message: ${error.message}`);
                         });
                 })
-                .catch(error => Util.respondError(res, 500, error));
+                .catch(error => {
+                    Util.respondError(res, 500, error);
+                    Util.logError('POST /gameweek/current',
+                                  `Error while creating GameweekCrawler - Message: ${error.message}`);
+                });
             });
 
 
@@ -64,21 +82,25 @@ export default class GameweekRoute {
 
                                 Promise.all(playerCrawls)
                                     .then(results => gameweekCrawler.saveGameweekResults(results[0].gameweekId, results))
-                                    .then(success => {
-                                        // TODO: log success....
-                                        console.log("results saved for gameweek...");
+                                    .then(gameweekId => {
+                                       Util.logInfo('GET /gameweek/result/crawl',
+                                                    `Crawled and saved results for gameweek ${gameweekId}`);
                                     })
                                     .catch(error => {
-                                        // TODO: log error...
-                                        console.log(error);
+                                       Util.logError('GET /gameweek/result/crawl',
+                                                     `Error while crawling results - Message: ${error.message}`);
                                     });
                             });
 
                         })
+                        .catch(error => {
+                            Util.logError('GET /gameweek/result/crawl',
+                                          `Error while getting current gameweek - Message: ${error.message}`);
+                        });
                 })
                 .catch(error => {
-                    // TODO: log error...
-                    console.log(error);
+                    Util.logError('GET /gameweek/result/crawl',
+                                  `Error while creating GameweekCrawler - Message: ${error.message}`);
                 });
 
                 Util.respondSuccess(res, {
@@ -97,18 +119,18 @@ export default class GameweekRoute {
                 .then(gameweekCrawler => {
                     Promise.all(gameweekCrawler.crawlGameweekResults(gameweekId))
                         .then(results => gameweekCrawler.saveGameweekResults(gameweekId, results))
-                        .then(success => {
-                            // TODO: log success
-                            console.log("resuls saved...");
+                        .then(gameweekId => {
+                            Util.logInfo(`GET /gameweek/result/crawl/${gameweekId}`,
+                                         `Crawled and saved results for the gameweek ${gameweekId}`);
                         })
                         .catch(error => {
-                            // TODO: log error...
-                            console.log(error);
+                            Util.logError(`GET /gameweek/result/crawl/${gameweekId}`,
+                                          `Error in crawling results - Message: ${error.message}`);
                         });
                 })
                 .catch(error => {
-                    // TODO: log error...
-                    console.log(error);
+                    Util.logError(`GET /gameweek/result/crawl/${gameweekId}`,
+                                  `Error in creating GameweekCrawler - Message: ${error.message}`);
                 });
 
                 Util.respondSuccess(res, {
