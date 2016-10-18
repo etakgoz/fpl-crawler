@@ -3,6 +3,7 @@ import GameweekResult from "./gameweek-result";
 import Player from "./player";
 import Config from "../configs/config";
 import Util from "./util";
+import UrlBuilder from "./url-builder";
 
 
 export default class GameweekCrawler {
@@ -14,13 +15,6 @@ export default class GameweekCrawler {
         // Gameweek Id must be integer bigger than 0 and smaller than nGameWeeks + 1
         return ((gameweekId > 0 && gameweekId < (this.nGameWeeks + 1)) && gameweekId === Math.floor(gameweekId));
     }
-
-    private getUrl(playerId: string, module: string, gameweekId?:number): string {
-        if (module === "result") {
-            return `https://fantasy.premierleague.com/drf/entry/${playerId}/event/${gameweekId}/picks`;
-        }
-    }
-
 
     public saveGameweekResults(gameweekId: number, results: GameweekResult[]): Promise<number> {
         return new Promise((resolve, reject) => {
@@ -40,7 +34,7 @@ export default class GameweekCrawler {
 
     private crawlGameweekResultForPlayer(playerId: string, gameweekId: number): Promise<GameweekResult> {
         return new Promise((resolve, reject) => {
-            const gameweekResultUrl = this.getUrl(playerId, "result", gameweekId);
+            const gameweekResultUrl = UrlBuilder.getPicksUrl(playerId, gameweekId);
 
             request(gameweekResultUrl, (error, response, jsonString) => {
                 if (!error && response.statusCode == 200) {

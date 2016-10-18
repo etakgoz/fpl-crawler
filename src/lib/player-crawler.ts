@@ -2,6 +2,7 @@ import * as request from "request";
 import Player from "./player";
 import Config from "../configs/config";
 import Util from "./util";
+import UrlBuilder from "./url-builder";
 
 export default class PlayerCrawler {
     constructor (private leagueId: number, private firebaseDb: any) {}
@@ -12,7 +13,9 @@ export default class PlayerCrawler {
 
     crawl() : Promise <Player[]> {
         return new Promise ((resolve, reject) => {
-            request(this.getLeagueDataUrl(), (error, response, jsonString) => {
+            const leagueDataUrl = UrlBuilder.getLeagueDataUrl(this.leagueId);
+
+            request(leagueDataUrl, (error, response, jsonString) => {
                 if (!error && response.statusCode == 200) {
                     let leagueData = JSON.parse(jsonString),
                         results = leagueData.standings.results,
@@ -33,7 +36,7 @@ export default class PlayerCrawler {
         });
     }
 
-    savePlayers(players: Player[]): Promise<Player[]> {
+    public savePlayers(players: Player[]): Promise<Player[]> {
         return new Promise((resolve, reject) => {
             this.firebaseDb.ref('/players').set(players, error => {
                 if (error) {
@@ -45,7 +48,7 @@ export default class PlayerCrawler {
         });
     }
 
-    getPlayers(): Promise<Player[]> {
+    public getPlayers(): Promise<Player[]> {
         return new Promise((resolve, reject) => {
             this.firebaseDb.ref('/players').once('value', snapshot => {
                 resolve(snapshot.val());
@@ -53,9 +56,5 @@ export default class PlayerCrawler {
                 reject(error);
             });
         });
-    }
-
-    private getLeagueDataUrl(): string {
-        return `https://fantasy.premierleague.com/drf/leagues-classic-standings/${this.leagueId}?phase=1&le-page=1&ls-page=1`;
     }
 }
