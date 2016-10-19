@@ -9,8 +9,12 @@ export default function() {
     const app: express.Express = express();
 
     // Load local settings
-    const localSettings = JSON.parse(fs.readFileSync('local/settings.json', 'utf8').trim());
-    Config.setLocalSettings(localSettings);
+    try {
+        const localSettings = JSON.parse(fs.readFileSync('local/settings.json', 'utf8').trim());
+        Config.setLocalSettings(localSettings);
+    } catch (error) {
+        throw new Error("Failed to read local settings file at local/settings.json!");
+    }
 
     app.use(logger("dev"));
     app.use(bodyParser.json());
