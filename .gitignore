@@ -12,3 +12,4 @@ typings
 bin
 my-notes/*
 keys/*
+local/*

@@ -3,9 +3,14 @@ import Config from "./config";
 import * as express from "express";
 import * as logger from "morgan";
 import * as path from "path";
+const fs = require('fs');
 
 export default function() {
-    var app: express.Express = express();
+    const app: express.Express = express();
+
+    // Load local settings
+    const localSettings = JSON.parse(fs.readFileSync('local/settings.json', 'utf8').trim());
+    Config.setLocalSettings(localSettings);
 
     app.use(logger("dev"));
     app.use(bodyParser.json());
@@ -13,7 +18,7 @@ export default function() {
 
 
     // CORS Middleware
-    var allowCrossDomain = (req, res, next) => {
+    const allowCrossDomain = (req, res, next) => {
         res.header('Access-Control-Allow-Origin', '*');
         res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE, OPTIONS');
         res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With, Accept');
