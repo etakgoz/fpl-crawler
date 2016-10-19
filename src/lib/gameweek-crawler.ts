@@ -19,7 +19,7 @@ export default class GameweekCrawler {
     public saveGameweekResults(gameweekId: number, results: GameweekResult[]): Promise<number> {
         return new Promise((resolve, reject) => {
             if (this.isValidGameweekId(gameweekId)) {
-                this.firebaseDb.ref('/gameweeks/results/' + gameweekId).set(results, error => {
+                this.firebaseDb.ref(Config.getLeaguePrefix() + '/gameweeks/results/' + gameweekId).set(results, error => {
                     if (error) {
                         reject(error);
                     } else {
@@ -71,7 +71,7 @@ export default class GameweekCrawler {
 
     public getCurrentGameweek(): Promise<number> {
         return new Promise((resolve, reject) => {
-            this.firebaseDb.ref('/gameweeks/current').once('value', snapshot => {
+            this.firebaseDb.ref(Config.getLeaguePrefix() + '/gameweeks/current').once('value', snapshot => {
                 resolve(snapshot.val());
             }, error => {
                 reject(error);
@@ -83,7 +83,7 @@ export default class GameweekCrawler {
 
         return new Promise((resolve, reject) => {
             if (this.isValidGameweekId(gameweekId)) {
-                this.firebaseDb.ref('/gameweeks/current').set(gameweekId, error => {
+                this.firebaseDb.ref(Config.getLeaguePrefix() + '/gameweeks/current').set(gameweekId, error => {
                     if (error) {
                         reject(error);
                     } else {

@@ -39,4 +39,8 @@ export default class Config {
             return this.firebaseDb;
         }
     }
+
+    public static getLeaguePrefix(): string {
+        return "/league/" + this.localSettings["leagueId"];
+    }
 }

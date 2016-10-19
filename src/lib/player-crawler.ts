@@ -38,7 +38,7 @@ export default class PlayerCrawler {
 
     public savePlayers(players: Player[]): Promise<Player[]> {
         return new Promise((resolve, reject) => {
-            this.firebaseDb.ref('/players').set(players, error => {
+            this.firebaseDb.ref(Config.getLeaguePrefix() + '/players').set(players, error => {
                 if (error) {
                     reject(error);
                 } else {
@@ -50,7 +50,7 @@ export default class PlayerCrawler {
 
     public getPlayers(): Promise<Player[]> {
         return new Promise((resolve, reject) => {
-            this.firebaseDb.ref('/players').once('value', snapshot => {
+            this.firebaseDb.ref(Config.getLeaguePrefix() + '/players').once('value', snapshot => {
                 resolve(snapshot.val());
             }, error => {
                 reject(error);
