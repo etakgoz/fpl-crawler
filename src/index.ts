@@ -16,13 +16,14 @@ import Config from "./configs/config";
 const app = require("./configs/express").default();
 
 const server: http.Server = http.createServer(app);
+const port = Config.getSetting("port");
 
-server.listen(Config.port);
+server.listen(port);
 
 server.on("error", (e : Error) => {
   console.log("Error starting server" + e);
 });
 
 server.on("listening", () => {
-  console.log("Server started on port " + Config.port);
+  console.log("Server started on port " + port);
 });

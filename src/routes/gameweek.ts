@@ -10,7 +10,8 @@ export default class GameweekRoute {
     }
 
     public static activate (app : express.Express) : void {
-        const playerCrawler = new PlayerCrawler(Config.leagueId, Config.getFirebaseDb());
+        const leagueId = Config.getSetting("leagueId");
+        const playerCrawler = new PlayerCrawler(leagueId, Config.getFirebaseDb());
 
         app.route("/gameweek/current")
             .get((req: express.Request, res: express.Response, next: Function): void => {
@@ -104,7 +105,7 @@ export default class GameweekRoute {
                 });
 
                 Util.respondSuccess(res, {
-                    "Message": `Crawling of the gameweeks for the league with id: ${Config.leagueId} has started.`
+                    "Message": `Crawling of the gameweeks for the league with id: ${leagueId} has started.`
                 });
             });
 
@@ -134,7 +135,7 @@ export default class GameweekRoute {
                 });
 
                 Util.respondSuccess(res, {
-                    "Message": `Crawling of the gameweek(${gameweekId}) for the league with id: ${Config.leagueId} has started.`
+                    "Message": `Crawling of the gameweek(${gameweekId}) for the league with id: ${leagueId} has started.`
                 });
             });
 

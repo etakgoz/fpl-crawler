@@ -10,7 +10,8 @@ export default class PlayerRoute {
 
     public static activate (app : express.Express) : void {
 
-        const playerCrawler = new PlayerCrawler(Config.leagueId, Config.getFirebaseDb());
+        const leagueId = Config.getSetting("leagueId");
+        const playerCrawler = new PlayerCrawler(leagueId, Config.getFirebaseDb());
 
         app.route("/player/crawl")
             .get((req: express.Request, res: express.Response, next: Function): void => {
@@ -28,7 +29,7 @@ export default class PlayerRoute {
                     });
 
                 Util.respondSuccess(res, {
-                    "Message": `Crawling of the league with the id: ${Config.leagueId} has started.`
+                    "Message": `Crawling of the league with the id: ${leagueId} has started.`
                 });
             });
 
@@ -72,7 +73,7 @@ export default class PlayerRoute {
                     .getPlayers()
                     .then(players => {
                         Util.respondSuccess(res, {
-                            "LeagueId": Config.leagueId,
+                            "LeagueId": leagueId,
                             "Players": players
                         });
                     })
