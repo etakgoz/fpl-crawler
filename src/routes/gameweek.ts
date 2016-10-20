@@ -105,13 +105,17 @@ export default class GameweekRoute {
                 });
 
                 Util.respondSuccess(res, {
-                    "Message": `Crawling of the gameweeks for the league with id: ${leagueId} has started.`
+                    "Message": `Crawling of the gameweek results for the league with id: ${leagueId} has started.`
                 });
             });
 
 
         app.route("/gameweek/result/crawl/:id")
             .get((req: express.Request, res: express.Response, next: Function): void => {
+                if (req.params.id === "last") {
+                    return next();
+                }
+
                 const gameweekId: number = parseInt(req.params.id, 10);
 
                 playerCrawler.getPlayers().then(players => {
@@ -135,7 +139,39 @@ export default class GameweekRoute {
                 });
 
                 Util.respondSuccess(res, {
-                    "Message": `Crawling of the gameweek(${gameweekId}) for the league with id: ${leagueId} has started.`
+                    "Message": `Crawling of the gameweek(${gameweekId}) result for the league with id: ${leagueId} has started.`
+                });
+            });
+
+
+        app.route("/gameweek/result/crawl/last")
+            .get((req: express.Request, res: express.Response, next: Function): void => {
+                let gameweekCrawler: GameweekCrawler = null;
+
+                playerCrawler.getPlayers().then(players => {
+                    gameweekCrawler = new GameweekCrawler(players, Config.getFirebaseDb());
+                    return gameweekCrawler;
+                })
+                .then(gameweekCrawler => gameweekCrawler.getCurrentGameweek())
+                .then(currentGameweekId => {
+                    Promise.all(gameweekCrawler.crawlGameweekResults(currentGameweekId))
+                        .then(results => gameweekCrawler.saveGameweekResults(currentGameweekId, results))
+                        .then(currentGameweekId => {
+                            Util.logInfo(`GET /gameweek/result/crawl/last`,
+                                         `Crawled and saved results for the last gameweek: ${currentGameweekId}`);
+                        })
+                        .catch(error => {
+                            Util.logError(`GET /gameweek/result/crawl/last`,
+                                          `Error in crawling results - Message: ${error.message}`);
+                        });
+                })
+                .catch(error => {
+                    Util.logError(`GET /gameweek/result/crawl/last`,
+                                  `Error in creating GameweekCrawler - Message: ${error.message}`);
+                });
+
+                Util.respondSuccess(res, {
+                    "Message": `Crawling of the last gameweek results for the league with id: ${leagueId} has started.`
                 });
             });
 
