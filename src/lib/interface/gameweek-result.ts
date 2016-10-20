@@ -1,4 +1,4 @@
-interface GameweekResult {
+interface IGameweekResult {
     playerId: string,
     gameweekId: number,
     points: number,
@@ -7,4 +7,4 @@ interface GameweekResult {
     activeChip: string
 }
 
-export default GameweekResult;
+export default IGameweekResult;

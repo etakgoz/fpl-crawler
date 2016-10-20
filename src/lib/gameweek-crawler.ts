@@ -1,6 +1,6 @@
 import * as request from "request";
-import GameweekResult from "./gameweek-result";
-import Player from "./player";
+import IGameweekResult from "./interface/gameweek-result";
+import IPlayer from "./interface/player";
 import Config from "../configs/config";
 import Util from "./util";
 import UrlBuilder from "./url-builder";
@@ -9,14 +9,14 @@ import UrlBuilder from "./url-builder";
 export default class GameweekCrawler {
     private nGameWeeks = 38;
 
-    constructor (private players: Player[], private firebaseDb: any) {}
+    constructor (private players: IPlayer[], private firebaseDb: any) {}
 
     private isValidGameweekId(gameweekId: number): boolean {
         // Gameweek Id must be integer bigger than 0 and smaller than nGameWeeks + 1
         return ((gameweekId > 0 && gameweekId < (this.nGameWeeks + 1)) && gameweekId === Math.floor(gameweekId));
     }
 
-    public saveGameweekResults(gameweekId: number, results: GameweekResult[]): Promise<number> {
+    public saveGameweekResults(gameweekId: number, results: IGameweekResult[]): Promise<number> {
         return new Promise((resolve, reject) => {
             if (this.isValidGameweekId(gameweekId)) {
                 this.firebaseDb.ref(Config.getLeaguePrefix() + '/gameweeks/results/' + gameweekId).set(results, error => {
@@ -32,7 +32,7 @@ export default class GameweekCrawler {
         });
     }
 
-    private crawlGameweekResultForPlayer(playerId: string, gameweekId: number): Promise<GameweekResult> {
+    private crawlGameweekResultForPlayer(playerId: string, gameweekId: number): Promise<IGameweekResult> {
         return new Promise((resolve, reject) => {
             const gameweekResultUrl = UrlBuilder.getPicksUrl(playerId, gameweekId);
 
@@ -57,11 +57,11 @@ export default class GameweekCrawler {
         });
     }
 
-    public crawlGameweekResults(gameweekId: number): Promise<GameweekResult> [] {
+    public crawlGameweekResults(gameweekId: number): Promise<IGameweekResult> [] {
         return this.players.map(player => this.crawlGameweekResultForPlayer(player.id, gameweekId));
     }
 
-    public crawlAllGameweekResults(currentGameweekId:number): Promise<GameweekResult>[][] {
+    public crawlAllGameweekResults(currentGameweekId:number): Promise<IGameweekResult>[][] {
         let gameweekCrawls = [];
         for (let i = 1; i < currentGameweekId + 1; i++ ) {
             gameweekCrawls.push(this.crawlGameweekResults(i));

@@ -1,5 +1,5 @@
 import * as request from "request";
-import Player from "./player";
+import IPlayer from "./interface/player";
 import Config from "../configs/config";
 import Util from "./util";
 import UrlBuilder from "./url-builder";
@@ -11,7 +11,7 @@ export default class PlayerCrawler {
         return this.leagueId;
     }
 
-    crawl() : Promise <Player[]> {
+    crawl() : Promise <IPlayer[]> {
         return new Promise ((resolve, reject) => {
             const leagueDataUrl = UrlBuilder.getLeagueDataUrl(this.leagueId);
 
@@ -19,7 +19,7 @@ export default class PlayerCrawler {
                 if (!error && response.statusCode == 200) {
                     let leagueData = JSON.parse(jsonString),
                         results = leagueData.standings.results,
-                        players: Player[] = results.map(result => {
+                        players: IPlayer[] = results.map(result => {
 
                             return {
                                 name: Util.titleCase(result["player_name"]),
@@ -36,7 +36,7 @@ export default class PlayerCrawler {
         });
     }
 
-    public savePlayers(players: Player[]): Promise<Player[]> {
+    public savePlayers(players: IPlayer[]): Promise<IPlayer[]> {
         return new Promise((resolve, reject) => {
             this.firebaseDb.ref(Config.getLeaguePrefix() + '/players').set(players, error => {
                 if (error) {
@@ -48,7 +48,7 @@ export default class PlayerCrawler {
         });
     }
 
-    public getPlayers(): Promise<Player[]> {
+    public getPlayers(): Promise<IPlayer[]> {
         return new Promise((resolve, reject) => {
             this.firebaseDb.ref(Config.getLeaguePrefix() + '/players').once('value', snapshot => {
                 resolve(snapshot.val());
