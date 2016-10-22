@@ -13,7 +13,40 @@ export default class GameweekRoute {
         const leagueId = Config.getSetting("leagueId");
         const playerCrawler = new PlayerCrawler(leagueId, Config.getFirebaseDb());
 
+        app.route("/gameweek/current/crawl")
+
+            // STARTS CRAWLING CURRENT GAMEWEEK
+            .get((req: express.Request, res: express.Response, next: Function): void => {
+
+                playerCrawler.getPlayers().then(players => {
+                    return new GameweekCrawler(players, Config.getFirebaseDb());
+                })
+                .then(gameweekCrawler => {
+                    gameweekCrawler
+                        .crawlCurrentGameweek()
+                        .then(gameweekId => gameweekCrawler.setCurrentGameweek(gameweekId))
+                        .then(gameweekId => Util.logInfo(
+                            'GET /gameweek/current/crawl',
+                            `Crawled and set current gameweek to ${gameweekId}`
+                        ))
+                        .catch(error => Util.logError(
+                            'GET /gameweek/current/crawl',
+                            `Error while crawling current gameweek - Message: ${error.message}`
+                        ));
+                })
+                .catch(error => Util.logError(
+                    'GET /gameweek/current/crawl',
+                    `Error while creating GameweekCrawler - Message: ${error.message}`
+                ));
+
+                Util.respondSuccess(res, {
+                    "Message": 'Started crawling current gameweek.'
+                });
+            });
+
         app.route("/gameweek/current")
+
+            // RETURNS CURRENT GAMEWEEK AS JSON
             .get((req: express.Request, res: express.Response, next: Function): void => {
 
                 playerCrawler.getPlayers().then(players => {
@@ -22,11 +55,9 @@ export default class GameweekRoute {
                 .then(gameweekCrawler => {
                     gameweekCrawler
                         .getCurrentGameweek()
-                        .then(gameweekId => {
-                            Util.respondSuccess(res, {
+                        .then(gameweekId => Util.respondSuccess(res, {
                                 "GameweekId": gameweekId
-                            });
-                        })
+                        }))
                         .catch(error => {
                             Util.respondError(res, 500, error);
                             Util.logError('GET /gameweek/current',
@@ -39,6 +70,8 @@ export default class GameweekRoute {
                                   `Error while creating GameweekCrawler - Message: ${error.message}`);
                 });
             })
+
+            // SETS CURRENT GAMEWEEK
             .post((req: express.Request, res: express.Response, next: Function): void => {
                 const newCurrentGameweekId = req.body.gameweekId;
 
@@ -48,11 +81,9 @@ export default class GameweekRoute {
                 .then(gameweekCrawler => {
                     gameweekCrawler
                         .setCurrentGameweek(newCurrentGameweekId)
-                        .then(success => {
-                            Util.respondSuccess(res, {
-                                "Message": `Current gameweek id is updated to the ${newCurrentGameweekId}`
-                            });
-                        })
+                        .then(gameweekId => Util.respondSuccess(res, {
+                            "Message": `Current gameweek id is updated to the ${gameweekId}`
+                        }))
                         .catch(error => {
                             Util.respondError(res, 500, error);
                             Util.logError('POST /gameweek/current',
@@ -68,6 +99,8 @@ export default class GameweekRoute {
 
 
         app.route("/gameweek/result/crawl")
+
+            // STARTS CRAWLING ALL GAMEWEEK RESULTS
             .get((req: express.Request, res: express.Response, next: Function): void => {
 
                 playerCrawler.getPlayers().then(players => {
@@ -83,26 +116,26 @@ export default class GameweekRoute {
 
                                 Promise.all(playerCrawls)
                                     .then(results => gameweekCrawler.saveGameweekResults(results[0].gameweekId, results))
-                                    .then(gameweekId => {
-                                       Util.logInfo('GET /gameweek/result/crawl',
-                                                    `Crawled and saved results for gameweek ${gameweekId}`);
-                                    })
-                                    .catch(error => {
-                                       Util.logError('GET /gameweek/result/crawl',
-                                                     `Error while crawling results - Message: ${error.message}`);
-                                    });
+                                    .then(gameweekId => Util.logInfo(
+                                        'GET /gameweek/result/crawl',
+                                        `Crawled and saved results for gameweek ${gameweekId}`
+                                    ))
+                                    .catch(error => Util.logError(
+                                        'GET /gameweek/result/crawl',
+                                        `Error while crawling results - Message: ${error.message}`
+                                    ));
                             });
 
                         })
-                        .catch(error => {
-                            Util.logError('GET /gameweek/result/crawl',
-                                          `Error while getting current gameweek - Message: ${error.message}`);
-                        });
+                        .catch(error => Util.logError(
+                            'GET /gameweek/result/crawl',
+                            `Error while getting current gameweek - Message: ${error.message}`
+                        ));
                 })
-                .catch(error => {
-                    Util.logError('GET /gameweek/result/crawl',
-                                  `Error while creating GameweekCrawler - Message: ${error.message}`);
-                });
+                .catch(error => Util.logError(
+                    'GET /gameweek/result/crawl',
+                    `Error while creating GameweekCrawler - Message: ${error.message}`
+                ));
 
                 Util.respondSuccess(res, {
                     "Message": `Crawling of the gameweek results for the league with id: ${leagueId} has started.`
@@ -111,8 +144,10 @@ export default class GameweekRoute {
 
 
         app.route("/gameweek/result/crawl/:id")
+
+            // CRAWLS RESULTS FOR A SPECIFIC GAMEWEEK
             .get((req: express.Request, res: express.Response, next: Function): void => {
-                if (req.params.id === "last") {
+                if (req.params.id === "current") {
                     return next();
                 }
 
@@ -124,27 +159,29 @@ export default class GameweekRoute {
                 .then(gameweekCrawler => {
                     Promise.all(gameweekCrawler.crawlGameweekResults(gameweekId))
                         .then(results => gameweekCrawler.saveGameweekResults(gameweekId, results))
-                        .then(gameweekId => {
-                            Util.logInfo(`GET /gameweek/result/crawl/${gameweekId}`,
-                                         `Crawled and saved results for the gameweek ${gameweekId}`);
-                        })
-                        .catch(error => {
-                            Util.logError(`GET /gameweek/result/crawl/${gameweekId}`,
-                                          `Error in crawling results - Message: ${error.message}`);
-                        });
+                        .then(gameweekId => Util.logInfo(
+                            `GET /gameweek/result/crawl/${gameweekId}`,
+                            `Crawled and saved results for the gameweek ${gameweekId}`
+                        ))
+                        .catch(error => Util.logError(
+                            `GET /gameweek/result/crawl/${gameweekId}`,
+                            `Error in crawling results - Message: ${error.message}`
+                        ));
                 })
-                .catch(error => {
-                    Util.logError(`GET /gameweek/result/crawl/${gameweekId}`,
-                                  `Error in creating GameweekCrawler - Message: ${error.message}`);
-                });
+                .catch(error => Util.logError(
+                    `GET /gameweek/result/crawl/${gameweekId}`,
+                    `Error in creating GameweekCrawler - Message: ${error.message}`
+                ));
 
                 Util.respondSuccess(res, {
-                    "Message": `Crawling of the gameweek(${gameweekId}) result for the league with id: ${leagueId} has started.`
+                    "Message": `Started crawling gameweek(${gameweekId}) result for the league with id: ${leagueId} has started.`
                 });
             });
 
 
-        app.route("/gameweek/result/crawl/last")
+        app.route("/gameweek/result/crawl/current")
+
+            // CRAWLS RESULTS FOR THE CURRENT GAMEWEEK
             .get((req: express.Request, res: express.Response, next: Function): void => {
                 let gameweekCrawler: GameweekCrawler = null;
 
@@ -156,22 +193,22 @@ export default class GameweekRoute {
                 .then(currentGameweekId => {
                     Promise.all(gameweekCrawler.crawlGameweekResults(currentGameweekId))
                         .then(results => gameweekCrawler.saveGameweekResults(currentGameweekId, results))
-                        .then(currentGameweekId => {
-                            Util.logInfo(`GET /gameweek/result/crawl/last`,
-                                         `Crawled and saved results for the last gameweek: ${currentGameweekId}`);
-                        })
-                        .catch(error => {
-                            Util.logError(`GET /gameweek/result/crawl/last`,
-                                          `Error in crawling results - Message: ${error.message}`);
-                        });
+                        .then(currentGameweekId => Util.logInfo(
+                            `GET /gameweek/result/crawl/current`,
+                            `Crawled and saved results for the last gameweek: ${currentGameweekId}`
+                        ))
+                        .catch(error => Util.logError(
+                            `GET /gameweek/result/crawl/current`,
+                            `Error in crawling results - Message: ${error.message}`
+                        ));
                 })
-                .catch(error => {
-                    Util.logError(`GET /gameweek/result/crawl/last`,
-                                  `Error in creating GameweekCrawler - Message: ${error.message}`);
-                });
+                .catch(error => Util.logError(
+                    `GET /gameweek/result/crawl/current`,
+                    `Error in creating GameweekCrawler - Message: ${error.message}`
+                ));
 
                 Util.respondSuccess(res, {
-                    "Message": `Crawling of the last gameweek results for the league with id: ${leagueId} has started.`
+                    "Message": `Started crawling current gameweek results for the league with id: ${leagueId} has started.`
                 });
             });
 

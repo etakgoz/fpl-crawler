@@ -51,7 +51,7 @@ export default class GameweekCrawler {
                     });
 
                 } else {
-                    reject(new Error(`An error occurred while crawling gameweek data for player(${playerId}) and gameweek(${gameweekId})`));
+                    reject(new Error(error));
                 }
             });
         });
@@ -69,6 +69,26 @@ export default class GameweekCrawler {
         return gameweekCrawls;
     }
 
+    public crawlCurrentGameweek(): Promise<number> {
+        return new Promise((resolve, reject) => {
+            const gameweekStatsUrl = UrlBuilder.getCurrentGameweekStatsUrl();
+
+            request(gameweekStatsUrl, (error, response, jsonString) => {
+                if (!error && response.statusCode == 200) {
+                    let data = JSON.parse(jsonString);
+
+                    if (data["current-event"]) {
+                        resolve(data["current-event"]);
+                    } else {
+                        reject(new Error('The current-event property is missing from the json data'));
+                    }
+                } else {
+                    reject(error);
+                }
+            });
+        });
+    }
+
     public getCurrentGameweek(): Promise<number> {
         return new Promise((resolve, reject) => {
             this.firebaseDb.ref(Config.getLeaguePrefix() + '/gameweeks/current').once('value', snapshot => {
@@ -79,7 +99,7 @@ export default class GameweekCrawler {
         });
     }
 
-    public setCurrentGameweek(gameweekId: number): Promise<boolean> {
+    public setCurrentGameweek(gameweekId: number): Promise<number> {
 
         return new Promise((resolve, reject) => {
             if (this.isValidGameweekId(gameweekId)) {
@@ -87,7 +107,7 @@ export default class GameweekCrawler {
                     if (error) {
                         reject(error);
                     } else {
-                        resolve(true);
+                        resolve(gameweekId);
                     }
                 });
             } else {

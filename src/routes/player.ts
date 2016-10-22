@@ -19,14 +19,14 @@ export default class PlayerRoute {
                 playerCrawler
                     .crawl()
                     .then(players => playerCrawler.savePlayers(players))
-                    .then(savedPlayers => {
-                        Util.logInfo('GET /player/crawl',
-                                     'Crawled and saved players: ' + savedPlayers.map(player => player.name).join(','));
-                    })
-                    .catch(error => {
-                        Util.logError('GET /player/crawl',
-                                      `Error while crawling players - Message: ${error.message}`);
-                    });
+                    .then(savedPlayers => Util.logInfo(
+                        'GET /player/crawl',
+                        'Crawled and saved players: ' + savedPlayers.map(player => player.name).join(',')
+                    ))
+                    .catch(error => Util.logError(
+                        'GET /player/crawl',
+                        `Error while crawling players - Message: ${error.message}`
+                    ));
 
                 Util.respondSuccess(res, {
                     "Message": `Crawling of the league with the id: ${leagueId} has started.`
@@ -36,6 +36,7 @@ export default class PlayerRoute {
         app.route("/player/:id")
             .get((req: express.Request, res: express.Response, next: Function): void => {
                 const playerId = req.params.id;
+
                 playerCrawler
                     .getPlayers()
                     .then(players => {
@@ -71,12 +72,10 @@ export default class PlayerRoute {
 
                 playerCrawler
                     .getPlayers()
-                    .then(players => {
-                        Util.respondSuccess(res, {
-                            "LeagueId": leagueId,
-                            "Players": players
-                        });
-                    })
+                    .then(players => Util.respondSuccess(res, {
+                        "LeagueId": leagueId,
+                        "Players": players
+                     }))
                     .catch(error => {
                         Util.logError(`GET /player/`,
                                       `Error while getting players - Message: ${error.message}`);
